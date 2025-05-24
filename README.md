@@ -144,3 +144,6 @@ For a list of open source projects and licenses used in OpenHands, please see ou
       url={https://arxiv.org/abs/2407.16741},
 }
 ```
+## 🔧 Configuration Options
+
+For detailed configuration options, please refer to the [config.toml](config.toml) file.
