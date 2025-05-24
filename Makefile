@@ -32,7 +32,6 @@ build:
 check-dependencies:
 	@echo "$(YELLOW)Checking dependencies...$(RESET)"
 	@$(MAKE) -s check-system
-	@$(MAKE) -s check-netcat
 	@$(MAKE) -s check-python
 	@$(MAKE) -s check-npm
 	@$(MAKE) -s check-nodejs
@@ -48,6 +47,7 @@ check-system:
 		if [ -f "/etc/manjaro-release" ]; then \
 			echo "$(BLUE)Manjaro Linux detected.$(RESET)"; \
 		else \
+			@$(MAKE) -s check-netcat
 			echo "$(BLUE)Linux detected.$(RESET)"; \
 		fi; \
 	elif [ "$$(uname -r | grep -i microsoft)" ]; then \
