@@ -3,10 +3,10 @@ SHELL=/usr/bin/env bash
 
 # Variables
 BACKEND_HOST ?= "127.0.0.1"
-BACKEND_PORT = 5000
+BACKEND_PORT = 6500
 BACKEND_HOST_PORT = "$(BACKEND_HOST):$(BACKEND_PORT)"
 FRONTEND_HOST ?= "127.0.0.1"
-FRONTEND_PORT = 5001
+FRONTEND_PORT = 6051
 DEFAULT_WORKSPACE_DIR = "./workspace"
 DEFAULT_MODEL = "gpt-4o"
 CONFIG_FILE = config.toml
@@ -32,6 +32,7 @@ build:
 check-dependencies:
 	@echo "$(YELLOW)Checking dependencies...$(RESET)"
 	@$(MAKE) -s check-system
+	@$(MAKE) -s check-netcat
 	@$(MAKE) -s check-python
 	@$(MAKE) -s check-npm
 	@$(MAKE) -s check-nodejs
@@ -47,7 +48,6 @@ check-system:
 		if [ -f "/etc/manjaro-release" ]; then \
 			echo "$(BLUE)Manjaro Linux detected.$(RESET)"; \
 		else \
-			@$(MAKE) -s check-netcat
 			echo "$(BLUE)Linux detected.$(RESET)"; \
 		fi; \
 	elif [ "$$(uname -r | grep -i microsoft)" ]; then \
@@ -64,7 +64,6 @@ check-netcat:
 	else \
 		echo "$(RED)nc is not installed. Installing"; \
 		@apt-get update && apt-get install netcat-openbsd \
-		exit 1; \
 	fi
 
 check-python:
@@ -187,16 +186,6 @@ install-frontend-dependencies:
 	echo "$(BLUE)Installing frontend dependencies with npm...$(RESET)"
 	@cd frontend && npm install
 	@echo "$(GREEN)Frontend dependencies installed successfully.$(RESET)"
-
-install-pre-commit-hooks:
-	@echo "$(YELLOW)Installing pre-commit hooks...$(RESET)"
-	@git config --unset-all core.hooksPath || true
-	@poetry run pre-commit install --config $(PRE_COMMIT_CONFIG_PATH)
-	@echo "$(GREEN)Pre-commit hooks installed successfully.$(RESET)"
-
-lint-backend:
-	@echo "$(YELLOW)Running linters...$(RESET)"
-	@poetry run pre-commit run --files openhands/**/* evaluation/**/* tests/**/* --show-diff-on-failure --config $(PRE_COMMIT_CONFIG_PATH)
 
 lint-frontend:
 	@echo "$(YELLOW)Running linters for frontend...$(RESET)"
@@ -339,4 +328,4 @@ help:
 	@echo "  $(GREEN)help$(RESET)                - Display this help message, providing information on available targets."
 
 # Phony targets
-.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry install-python-dependencies install-frontend-dependencies install-pre-commit-hooks lint-backend lint-frontend lint test-frontend test build-frontend start-backend start-frontend _run_setup run run-wsl setup-config setup-config-prompts setup-config-basic openhands-cloud-run docker-dev docker-run clean help
+.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry install-python-dependencies install-frontend-dependencies lint-backend lint-frontend lint test-frontend test build-frontend start-backend start-frontend _run_setup run run-wsl setup-config setup-config-prompts setup-config-basic openhands-cloud-run docker-dev docker-run clean help
