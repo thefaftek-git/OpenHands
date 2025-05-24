@@ -375,6 +375,7 @@ class GitHubService(BaseGitService, GitService):
                     )
                 )
 
+            # Return both PR and issue tasks together
             return tasks
 
         except Exception as e:
@@ -386,6 +387,7 @@ class GitHubService(BaseGitService, GitService):
                 },
             )
 
+        # Always return any tasks we found, even if some queries failed
         return tasks
 
     async def get_repository_details_from_repo_name(

@@ -56,9 +56,14 @@ class GitLabService(BaseGitService, GitService):
         if not self.token:
             self.token = await self.get_latest_token()
 
-        return {
-            'Authorization': f'Bearer {self.token.get_secret_value()}',
-        }
+        # Use correct header format for GitLab: 'Bearer' must be followed by the token without space
+        # The error in logs shows "Illegal header value b'Bearer '"
+        token_value = self.token.get_secret_value() if self.token else ''
+        if token_value:
+            return {
+                'Authorization': f'Bearer {token_value}',
+            }
+        return {}
 
     def _has_token_expired(self, status_code: int) -> bool:
         return status_code == 401
