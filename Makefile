@@ -63,7 +63,7 @@ check-netcat:
 		echo "$(BLUE) nc is already installed.$(RESET)"; \
 	else \
 		echo "$(RED)nc is not installed. Installing"; \
-		@apt-get update && apt-get install netcat-openbsd \
+		apt-get update && apt-get install netcat-openbsd; \
 	fi
 
 check-python:
