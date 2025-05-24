@@ -51,8 +51,8 @@ export function ModelSelector({
   const handleChangeModel = (model: string) => {
     const separator = models[selectedProvider || ""]?.separator || "";
     let fullModel = selectedProvider + separator + model;
-    if (selectedProvider === "openai") {
-      // LiteLLM lists OpenAI models without the openai/ prefix
+    if (selectedProvider === "openai" || selectedProvider === "litellm") {
+      // LiteLLM and OpenAI models don't need provider prefixes
       fullModel = model;
     }
     setLitellmId(fullModel);

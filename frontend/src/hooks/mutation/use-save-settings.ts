@@ -26,6 +26,9 @@ const saveSettingsMutationFn = async (settings: Partial<PostSettings>) => {
     enable_proactive_conversation_starters:
       settings.ENABLE_PROACTIVE_CONVERSATION_STARTERS,
     search_api_key: settings.SEARCH_API_KEY?.trim() || "",
+    litellm_proxy_enabled: settings.LITELLM_PROXY_ENABLED,
+    litellm_proxy_base_url: settings.LITELLM_PROXY_BASE_URL?.trim() || "",
+    litellm_proxy_api_key: settings.LITELLM_PROXY_API_KEY?.trim() || "",
   };
 
   await OpenHands.saveSettings(apiSettings);

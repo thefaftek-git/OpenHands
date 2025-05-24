@@ -40,13 +40,16 @@ class Settings(BaseModel):
     sandbox_runtime_container_image: str | None = None
     mcp_config: MCPConfig | None = None
     search_api_key: SecretStr | None = None
+    litellm_proxy_enabled: bool = False
+    litellm_proxy_base_url: str | None = None
+    litellm_proxy_api_key: SecretStr | None = None
 
 
     model_config = {
         'validate_assignment': True,
     }
 
-    @field_serializer('llm_api_key', 'search_api_key')
+    @field_serializer('llm_api_key', 'search_api_key', 'litellm_proxy_api_key')
     def api_key_serializer(self, api_key: SecretStr | None, info: SerializationInfo):
         """Custom serializer for API keys.
 
