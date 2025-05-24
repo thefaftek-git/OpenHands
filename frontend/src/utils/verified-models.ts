@@ -5,6 +5,7 @@ export const VERIFIED_PROVIDERS = [
   "anthropic",
   "deepseek",
   "litellm",
+  "litellm_proxy",
 ];
 
 // LiteLLM proxy models that we want to show in the dropdown
@@ -13,6 +14,14 @@ export const VERIFIED_LITELLM_MODELS = [
   "gpt-4o-mini",
   "claude-3-5-sonnet-20241022",
   "claude-3-7-sonnet-20250219",
+];
+
+// LiteLLM proxy models that we want to show in the dropdown (with litellm_proxy/ prefix)
+export const VERIFIED_LITELLM_PROXY_MODELS = [
+  "litellm_proxy/gpt-4o",
+  "litellm_proxy/gpt-4o-mini",
+  "litellm_proxy/claude-3-5-sonnet-20241022",
+  "litellm_proxy/claude-3-7-sonnet-20250219",
 ];
 
 export const VERIFIED_MODELS = [

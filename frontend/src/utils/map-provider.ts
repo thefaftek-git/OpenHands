@@ -24,6 +24,7 @@ export const MAP_PROVIDER = {
   voyage: "Voyage AI",
   openrouter: "OpenRouter",
   litellm: "LiteLLM",
+  litellm_proxy: "LiteLLM Proxy",
 };
 
 export const mapProvider = (provider: string) =>

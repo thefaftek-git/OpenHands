@@ -9,6 +9,7 @@ export const LLMProviderOptions = {
   openai: "openai",
   anthropic: "anthropic",
   litellm: "litellm",
+  litellm_proxy: "litellm_proxy",
 } as const;
 
 export type LLMProvider = keyof typeof LLMProviderOptions;
