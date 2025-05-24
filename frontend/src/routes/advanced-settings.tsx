@@ -179,12 +179,4 @@ function AdvancedSettingsScreen() {
     </form>
   );
 }
-
-return (
-  <div>
-    <h1>Advanced Settings</h1>
-    {/* Advanced settings inputs will go here */}
-  </div>
-);
-
 export default AdvancedSettingsScreen;

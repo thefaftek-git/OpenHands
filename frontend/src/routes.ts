@@ -14,6 +14,7 @@ export default [
       route("mcp", "routes/mcp-settings.tsx"),
       route("git", "routes/git-settings.tsx"),
       route("app", "routes/app-settings.tsx"),
+      route("advanced", "routes/advanced-settings.tsx"),
       route("billing", "routes/billing.tsx"),
       route("secrets", "routes/secrets-settings.tsx"),
       route("api-keys", "routes/api-keys.tsx"),

@@ -10,7 +10,7 @@ integrate it with other services. In GUI Mode, any settings applied through the 
 The core configuration options are defined in the `[core]` section of the `config.toml` file.
 
 ### API Keys
-- `e2b_api_key`
+- [`e2b_api_key`](https://github.com/All-Hands-AI/OpenHands/blob/main/openhands/core/config/app_config.py)
   - Type: `str`
   - Default: `""`
   - Description: API key for E2B

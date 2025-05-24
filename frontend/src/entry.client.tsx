@@ -14,7 +14,6 @@ import "./i18n";
 import { QueryClientProvider } from "@tanstack/react-query";
 import store from "./store";
 import OpenHands from "./api/open-hands";
-import { displayErrorToast } from "./utils/custom-toast-handlers";
 import { queryClient } from "./query-client-config";
 
 function PosthogInit() {
@@ -28,7 +27,7 @@ function PosthogInit() {
         const config = await OpenHands.getConfig();
         setPosthogClientKey(config.POSTHOG_CLIENT_KEY);
       } catch (error) {
-        displayErrorToast("Error fetching PostHog client key");
+        // console.error("Error fetching PostHog client key");
       }
     })();
   }, []);
