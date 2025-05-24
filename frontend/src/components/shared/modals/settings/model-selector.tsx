@@ -7,7 +7,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { I18nKey } from "#/i18n/declaration";
 import { mapProvider } from "#/utils/map-provider";
-import { VERIFIED_MODELS, VERIFIED_PROVIDERS } from "#/utils/verified-models";
+import {
+  VERIFIED_MODELS,
+  VERIFIED_PROVIDERS,
+  VERIFIED_LITELLM_MODELS,
+} from "#/utils/verified-models";
 import { extractModelAndProvider } from "#/utils/extract-model-and-provider";
 
 interface ModelSelectorProps {
@@ -146,25 +150,35 @@ export function ModelSelector({
             },
           }}
         >
-          <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$VERIFIED)}>
-            {models[selectedProvider || ""]?.models
-              .filter((model) => VERIFIED_MODELS.includes(model))
-              .map((model) => (
+          {selectedProvider === "litellm" ? (
+            <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$VERIFIED)}>
+              {VERIFIED_LITELLM_MODELS.map((model) => (
                 <AutocompleteItem key={model}>{model}</AutocompleteItem>
               ))}
-          </AutocompleteSection>
-          <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
-            {models[selectedProvider || ""]?.models
-              .filter((model) => !VERIFIED_MODELS.includes(model))
-              .map((model) => (
-                <AutocompleteItem
-                  data-testid={`model-item-${model}`}
-                  key={model}
-                >
-                  {model}
-                </AutocompleteItem>
-              ))}
-          </AutocompleteSection>
+            </AutocompleteSection>
+          ) : (
+            <>
+              <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$VERIFIED)}>
+                {models[selectedProvider || ""]?.models
+                  .filter((model) => VERIFIED_MODELS.includes(model))
+                  .map((model) => (
+                    <AutocompleteItem key={model}>{model}</AutocompleteItem>
+                  ))}
+              </AutocompleteSection>
+              <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
+                {models[selectedProvider || ""]?.models
+                  .filter((model) => !VERIFIED_MODELS.includes(model))
+                  .map((model) => (
+                    <AutocompleteItem
+                      data-testid={`model-item-${model}`}
+                      key={model}
+                    >
+                      {model}
+                    </AutocompleteItem>
+                  ))}
+              </AutocompleteSection>
+            </>
+          )}
         </Autocomplete>
       </fieldset>
     </div>

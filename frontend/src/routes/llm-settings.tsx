@@ -294,14 +294,33 @@ function LlmSettingsScreen() {
               data-testid="llm-settings-form-basic"
               className="flex flex-col gap-6"
             >
-              {!isLoading && !isFetching && (
-                <ModelSelector
-                  models={modelsAndProviders}
-                  currentModel={
-                    settings.LLM_MODEL || "anthropic/claude-sonnet-4-20250514"
-                  }
-                  onChange={handleModelIsDirty}
-                />
+              {!isLoading && !isFetching && settings.LITELLM_PROXY_ENABLED ? (
+                <div>
+                  <h3 className="text-lg font-medium mb-4">
+                    {t(I18nKey.SETTINGS$LITELLM_PROXY)}
+                  </h3>
+                  <p className="text-sm mb-4">
+                    {t(I18nKey.SETTINGS$USING_LITELLM_PROXY, {
+                      url: settings.LITELLM_PROXY_BASE_URL || "N/A",
+                    })}
+                  </p>
+                  <ModelSelector
+                    models={modelsAndProviders}
+                    currentModel={settings.LLM_MODEL || "gpt-4o"}
+                    onChange={handleModelIsDirty}
+                  />
+                </div>
+              ) : (
+                !isLoading &&
+                !isFetching && (
+                  <ModelSelector
+                    models={modelsAndProviders}
+                    currentModel={
+                      settings.LLM_MODEL || "anthropic/claude-sonnet-4-20250514"
+                    }
+                    onChange={handleModelIsDirty}
+                  />
+                )
               )}
 
               <SettingsInput

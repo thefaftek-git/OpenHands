@@ -3,10 +3,10 @@ SHELL=/usr/bin/env bash
 
 # Variables
 BACKEND_HOST ?= "127.0.0.1"
-BACKEND_PORT = 3000
+BACKEND_PORT = 5000
 BACKEND_HOST_PORT = "$(BACKEND_HOST):$(BACKEND_PORT)"
 FRONTEND_HOST ?= "127.0.0.1"
-FRONTEND_PORT = 3001
+FRONTEND_PORT = 5001
 DEFAULT_WORKSPACE_DIR = "./workspace"
 DEFAULT_MODEL = "gpt-4o"
 CONFIG_FILE = config.toml
@@ -26,19 +26,16 @@ build:
 	@$(MAKE) -s check-dependencies
 	@$(MAKE) -s install-python-dependencies
 	@$(MAKE) -s install-frontend-dependencies
-	@$(MAKE) -s install-pre-commit-hooks
 	@$(MAKE) -s build-frontend
 	@echo "$(GREEN)Build completed successfully.$(RESET)"
 
 check-dependencies:
 	@echo "$(YELLOW)Checking dependencies...$(RESET)"
 	@$(MAKE) -s check-system
+	@$(MAKE) -s check-netcat
 	@$(MAKE) -s check-python
 	@$(MAKE) -s check-npm
 	@$(MAKE) -s check-nodejs
-ifeq ($(INSTALL_DOCKER),)
-	@$(MAKE) -s check-docker
-endif
 	@$(MAKE) -s check-poetry
 	@$(MAKE) -s check-tmux
 	@echo "$(GREEN)Dependencies checked successfully.$(RESET)"
@@ -57,6 +54,16 @@ check-system:
 		echo "$(BLUE)Windows Subsystem for Linux detected.$(RESET)"; \
 	else \
 		echo "$(RED)Unsupported system detected. Please use macOS, Linux, or Windows Subsystem for Linux (WSL).$(RESET)"; \
+		exit 1; \
+	fi
+
+check-netcat:
+	@echo "$(YELLOW)Checking netcat installation...$(RESET)"
+	@if command -v nc > /dev/null; then \
+		echo "$(BLUE) nc is already installed.$(RESET)"; \
+	else \
+		echo "$(RED)nc is not installed. Installing"; \
+		@apt-get update && apt-get install netcat-openbsd \
 		exit 1; \
 	fi
 

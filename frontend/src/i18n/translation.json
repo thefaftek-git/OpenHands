@@ -1343,6 +1343,22 @@
         "de": "LiteLLM Proxy",
         "uk": "Проксі LiteLLM"
     },
+    "SETTINGS$USING_LITELLM_PROXY": {
+        "en": "Using LiteLLM Proxy at: {{url}}",
+        "ja": "LiteLLMプロキシを使用中: {{url}}",
+        "zh-CN": "正在使用LiteLLM代理: {{url}}",
+        "zh-TW": "正在使用LiteLLM代理: {{url}}",
+        "ko-KR": "LiteLLM 프록시 사용 중: {{url}}",
+        "no": "Bruker LiteLLM-proxy på: {{url}}",
+        "it": "Utilizzo del proxy LiteLLM su: {{url}}",
+        "pt": "Usando o proxy LiteLLM em: {{url}}",
+        "es": "Usando el proxy LiteLLM en: {{url}}",
+        "ar": "استخدام وكيل LiteLLM في: {{url}}",
+        "fr": "Utilisation du proxy LiteLLM à: {{url}}",
+        "tr": "LiteLLM Vekili kullanılıyor: {{url}}",
+        "de": "Verwendung des LiteLLM-Proxys bei: {{url}}",
+        "uk": "Використання проксі LiteLLM на: {{url}}"
+    },
     "SETTINGS$ENABLE_LITELLM_PROXY": {
         "en": "Enable LiteLLM Proxy",
         "ja": "LiteLLM プロキシを有効化",
@@ -1374,6 +1390,22 @@
         "tr": "LiteLLM Proxy URL",
         "de": "LiteLLM Proxy URL",
         "uk": "URL проксі LiteLLM"
+    },
+    "SETTINGS$USING_LITELLM_PROXY": {
+        "en": "Using LiteLLM Proxy at: {{url}}",
+        "ja": "LiteLLM プロキシを使用中: {{url}}",
+        "zh-CN": "正在使用 LiteLLM 代理: {{url}}",
+        "zh-TW": "正在使用 LiteLLM 代理: {{url}}",
+        "ko-KR": "LiteLLM 프록시 사용 중: {{url}}",
+        "no": "Bruker LiteLLM-proxy på: {{url}}",
+        "it": "Utilizzo del proxy LiteLLM su: {{url}}",
+        "pt": "Usando proxy LiteLLM em: {{url}}",
+        "es": "Usando proxy LiteLLM en: {{url}}",
+        "ar": "استخدام وكيل LiteLLM في: {{url}}",
+        "fr": "Utilisation du proxy LiteLLM à: {{url}}",
+        "tr": "LiteLLM Proxy kullanılıyor: {{url}}",
+        "de": "Verwenden von LiteLLM-Proxy unter: {{url}}",
+        "uk": "Використання проксі LiteLLM за адресою: {{url}}"
     },
     "SETTINGS$LITELLM_PROXY_API_KEY": {
         "en": "LiteLLM Proxy API Key",
