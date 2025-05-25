@@ -38,6 +38,16 @@ def get_supported_llm_models(config: AppConfig) -> list[str]:
             llm_config.aws_secret_access_key.get_secret_value(),
         )
     model_list = litellm_model_list_without_bedrock + bedrock_model_list
+    
+    # Add litellm_proxy models
+    litellm_proxy_models = [
+        'litellm_proxy/gpt-4o',
+        'litellm_proxy/gpt-4o-mini',
+        'litellm_proxy/claude-3-5-sonnet-20241022',
+        'litellm_proxy/claude-3-7-sonnet-20250219',
+    ]
+    model_list.extend(litellm_proxy_models)
+    
     for llm_config in config.llms.values():
         ollama_base_url = llm_config.ollama_base_url
         if llm_config.model.startswith('ollama'):
