@@ -1,13 +1,24 @@
 import asyncio
+import sys
 from contextlib import AsyncExitStack
 from typing import Optional
 
-from mcp import ClientSession
-from mcp.client.sse import sse_client
 from pydantic import BaseModel, Field
 
 from openhands.core.logger import openhands_logger as logger
-from openhands.mcp.tool import MCPClientTool
+
+# Temporarily modify sys.path to prioritize site-packages over local modules
+_original_path = sys.path[:]
+sys.path = [p for p in sys.path if 'openhands' not in p] + [
+    p for p in sys.path if 'openhands' in p
+]
+
+try:
+    from mcp import ClientSession
+    from mcp.client.sse import sse_client
+finally:
+    # Restore original path
+    sys.path = _original_path
 
 
 class MCPClient(BaseModel):
@@ -18,8 +29,8 @@ class MCPClient(BaseModel):
     session: Optional[ClientSession] = None
     exit_stack: AsyncExitStack = AsyncExitStack()
     description: str = 'MCP client tools for server interaction'
-    tools: list[MCPClientTool] = Field(default_factory=list)
-    tool_map: dict[str, MCPClientTool] = Field(default_factory=dict)
+    tools: list = Field(default_factory=list)
+    tool_map: dict = Field(default_factory=dict)
 
     class Config:
         arbitrary_types_allowed = True
@@ -84,6 +95,9 @@ class MCPClient(BaseModel):
 
         # Clear existing tools
         self.tools = []
+
+        # Import at runtime to avoid circular import
+        from openhands.mcp.tool import MCPClientTool
 
         # Create proper tool objects for each server tool
         for tool in response.tools:
