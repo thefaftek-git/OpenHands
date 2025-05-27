@@ -31,13 +31,29 @@ class AzureDevOpsServiceImpl(BaseGitService):
         external_auth_id: str | None = None,
         external_auth_token: SecretStr | None = None,
         external_token_manager: bool = False,
+        base_domain: str | None = None,
     ):
         self.user_id = user_id
         self.token = token
         self.external_auth_id = external_auth_id
         self.external_auth_token = external_auth_token
         self.external_token_manager = external_token_manager
-        self.base_url = 'https://dev.azure.com'
+        
+        # Support custom Azure DevOps instances
+        if base_domain:
+            if base_domain.startswith('http'):
+                # Extract organization URL from URLs like https://org.visualstudio.com/project
+                base_url = base_domain.rstrip('/')
+                # If URL contains a project path, extract just the organization part
+                if '/' in base_url.split('://', 1)[1]:
+                    url_parts = base_url.split('/')
+                    self.base_url = '/'.join(url_parts[:3])  # https://org.visualstudio.com
+                else:
+                    self.base_url = base_url
+            else:
+                self.base_url = f'https://{base_domain}'
+        else:
+            self.base_url = 'https://dev.azure.com'
 
     @property
     def provider(self) -> str:
@@ -121,57 +137,79 @@ class AzureDevOpsServiceImpl(BaseGitService):
         # Would need organization context to properly search
         return []
 
+    async def _process_projects(self, projects_data: dict, repositories: list, base_org_url: str):
+        """Helper method to process projects and extract repositories"""
+        for project in projects_data.get('value', []):
+            project_id = project.get('id')
+            project_name = project.get('name')
+
+            if not project_id or not project_name:
+                continue
+
+            # Extract organization name from URL
+            org_name = base_org_url.split('/')[-1] if base_org_url != self.base_url else 'DefaultCollection'
+            if self.base_url != 'https://dev.azure.com':
+                # For custom URLs like https://njohnson3163.visualstudio.com, extract org name from domain
+                from urllib.parse import urlparse
+                parsed = urlparse(base_org_url)
+                org_name = parsed.hostname.split('.')[0] if parsed.hostname else 'DefaultCollection'
+
+            # Get repositories for this project
+            repos_url = f'{base_org_url}/{project_name}/_apis/git/repositories?api-version=7.1-preview.1'
+            try:
+                repos_data, _ = await self._make_request(repos_url)
+
+                for repo in repos_data.get('value', []):
+                    # Convert UUID string to integer using hash
+                    repo_id_str = repo.get('id', '')
+                    repo_id = hash(repo_id_str) & 0x7FFFFFFF  # Ensure positive 32-bit int
+                    
+                    repositories.append(
+                        Repository(
+                            id=repo_id,
+                            full_name=f'{org_name}/{project_name}/{repo.get("name", "")}',
+                            git_provider=ProviderType.AZURE_DEVOPS,
+                            is_public=False,  # Azure DevOps repos are typically private
+                        )
+                    )
+            except Exception as e:
+                logger.warning(
+                    f'Failed to get repositories for project {project_name}: {e}'
+                )
+                continue
+
     async def get_repositories(self, sort: str, app_mode: AppMode) -> list[Repository]:
         """Get repositories for the authenticated user"""
         try:
-            # First, get organizations the user has access to
-            orgs_url = f'{self.base_url}/_apis/accounts?api-version=7.1-preview.1'
-            orgs_data, _ = await self._make_request(orgs_url)
+            repositories: list[Repository] = []
 
-            repositories = []
-
-            for org in orgs_data.get('value', []):
-                org_name = org.get('accountName')
-                if not org_name:
-                    continue
-
-                # Get projects for this organization
-                projects_url = f'{self.base_url}/{org_name}/_apis/projects?api-version=7.1-preview.4'
+            # Check if we're using a custom organization URL vs generic dev.azure.com
+            if self.base_url != 'https://dev.azure.com':
+                # Direct organization access - get projects directly
+                projects_url = f'{self.base_url}/_apis/projects?api-version=7.1-preview.4'
                 try:
                     projects_data, _ = await self._make_request(projects_url)
-
-                    for project in projects_data.get('value', []):
-                        project_id = project.get('id')
-                        project_name = project.get('name')
-
-                        if not project_id or not project_name:
-                            continue
-
-                        # Get repositories for this project
-                        repos_url = f'{self.base_url}/{org_name}/{project_name}/_apis/git/repositories?api-version=7.1-preview.1'
-                        try:
-                            repos_data, _ = await self._make_request(repos_url)
-
-                            for repo in repos_data.get('value', []):
-                                repositories.append(
-                                    Repository(
-                                        id=repo.get('id', ''),
-                                        full_name=f'{org_name}/{project_name}/{repo.get("name", "")}',
-                                        git_provider=ProviderType.AZURE_DEVOPS,
-                                        is_public=False,  # Azure DevOps repos are typically private
-                                    )
-                                )
-                        except Exception as e:
-                            logger.warning(
-                                f'Failed to get repositories for project {project_name}: {e}'
-                            )
-                            continue
-
+                    await self._process_projects(projects_data, repositories, self.base_url)
                 except Exception as e:
-                    logger.warning(
-                        f'Failed to get projects for organization {org_name}: {e}'
-                    )
-                    continue
+                    logger.warning(f'Failed to get projects from {self.base_url}: {e}')
+            else:
+                # Generic Azure DevOps - get organizations first
+                orgs_url = f'{self.base_url}/_apis/accounts?api-version=7.1-preview.1'
+                orgs_data, _ = await self._make_request(orgs_url)
+
+                for org in orgs_data.get('value', []):
+                    org_name = org.get('accountName')
+                    if not org_name:
+                        continue
+
+                    # Get projects for this organization
+                    projects_url = f'{self.base_url}/{org_name}/_apis/projects?api-version=7.1-preview.4'
+                    try:
+                        projects_data, _ = await self._make_request(projects_url)
+                        await self._process_projects(projects_data, repositories, f'{self.base_url}/{org_name}')
+                    except Exception as e:
+                        logger.warning(f'Failed to get projects from {org_name}: {e}')
+                        continue
 
             return repositories
 
@@ -223,7 +261,13 @@ class AzureDevOpsServiceImpl(BaseGitService):
 
         org_name, project_name, repo_name = parts
 
-        url = f'{self.base_url}/{quote(org_name)}/{quote(project_name)}/_apis/git/repositories/{quote(repo_name)}/refs?filter=heads/&api-version=7.1-preview.1'
+        # For custom instances like visualstudio.com, the URL format is different
+        if self.base_url != 'https://dev.azure.com':
+            # Custom instance: https://instance.com/project/_apis/git/repositories/repo/refs
+            url = f'{self.base_url}/{quote(project_name)}/_apis/git/repositories/{quote(repo_name)}/refs?filter=heads/&api-version=7.1-preview.1'
+        else:
+            # Azure DevOps cloud: https://dev.azure.com/org/project/_apis/git/repositories/repo/refs  
+            url = f'{self.base_url}/{quote(org_name)}/{quote(project_name)}/_apis/git/repositories/{quote(repo_name)}/refs?filter=heads/&api-version=7.1-preview.1'
 
         try:
             data, _ = await self._make_request(url)

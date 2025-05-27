@@ -1,5 +1,8 @@
 from pydantic import SecretStr
 
+from openhands.integrations.azure_devops.azure_devops_service import (
+    AzureDevOpsServiceImpl,
+)
 from openhands.integrations.github.github_service import GitHubService
 from openhands.integrations.gitlab.gitlab_service import GitLabService
 from openhands.integrations.provider import ProviderType
@@ -9,8 +12,8 @@ async def validate_provider_token(
     token: SecretStr, base_domain: str | None = None
 ) -> ProviderType | None:
     """
-    Determine whether a token is for GitHub or GitLab by attempting to get user info
-    from both services.
+    Determine whether a token is for GitHub, GitLab, or Azure DevOps by attempting to get user info
+    from each service.
 
     Args:
         token: The token to check
@@ -18,7 +21,8 @@ async def validate_provider_token(
     Returns:
         'github' if it's a GitHub token
         'gitlab' if it's a GitLab token
-        None if the token is invalid for both services
+        'azure_devops' if it's an Azure DevOps token
+        None if the token is invalid for all services
     """
     # Try GitHub first
     try:
@@ -34,6 +38,19 @@ async def validate_provider_token(
         await gitlab_service.get_user()
         return ProviderType.GITLAB
     except Exception:
+        pass
+
+    # Try Azure DevOps last
+    try:
+        from openhands.server.types import AppMode
+
+        azure_devops_service = AzureDevOpsServiceImpl(
+            token=token, base_domain=base_domain
+        )
+        await azure_devops_service.get_repositories(sort='name', app_mode=AppMode.OSS)
+        return ProviderType.AZURE_DEVOPS
+    except Exception as e:
+        print(f'Azure DevOps validation failed: {e}')
         pass
 
     return None
