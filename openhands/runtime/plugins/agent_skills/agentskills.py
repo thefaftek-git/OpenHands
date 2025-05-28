@@ -12,7 +12,12 @@ import_functions(
 import_functions(
     module=repo_ops, function_names=repo_ops.__all__, target_globals=globals()
 )
-__all__ = file_ops.__all__ + file_reader.__all__ + repo_ops.__all__
+import_functions(
+    module=openhands.runtime.plugins.agent_skills.files_to_prompt,
+    function_names=['process_files_to_prompt'],
+    target_globals=globals()
+)
+__all__ = file_ops.__all__ + file_reader.__all__ + repo_ops.__all__ + ['process_files_to_prompt']
 
 
 DOCUMENTATION = ''
