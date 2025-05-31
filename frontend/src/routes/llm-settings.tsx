@@ -47,7 +47,7 @@ function LlmSettingsScreen() {
     enableDefaultCondenser: false,
     securityAnalyzer: false,
     litellmProxyEnabled: false,
-    litellmProxyBaseUrl: false,
+    litellmProxyBaseUrl: "",
     litellmProxyApiKey: false,
   });
 
