@@ -654,6 +654,34 @@ NON_FNCALL_RESPONSE_MESSAGE = {
 <parameter=view_range>[1, 10]</parameter>
 </function>""",
         ),
+        # Test case with indented code block to verify indentation is preserved
+        (
+            [
+                {
+                    'index': 1,
+                    'function': {
+                        'arguments': '{"command": "str_replace", "path": "/test/file.py", "old_str": "def example():\\n    pass", "new_str": "def example():\\n    # This is indented\\n    print(\\"hello\\")\\n    return True"}',
+                        'name': 'str_replace_editor',
+                    },
+                    'id': 'test_id',
+                    'type': 'function',
+                }
+            ],
+            """<function=str_replace_editor>
+<parameter=command>str_replace</parameter>
+<parameter=path>/test/file.py</parameter>
+<parameter=old_str>
+def example():
+    pass
+</parameter>
+<parameter=new_str>
+def example():
+    # This is indented
+    print("hello")
+    return True
+</parameter>
+</function>""",
+        ),
     ],
 )
 def test_convert_tool_call_to_string(tool_calls, expected):
@@ -993,4 +1021,32 @@ def test_convert_fncall_messages_without_cache_control():
     assert (
         result[0]['content'][0]['text']
         == 'EXECUTION RESULT of [test_tool]:\ntest content'
+    )
+
+
+def test_convert_fncall_messages_with_image_url():
+    """Test that convert_fncall_messages_to_non_fncall_messages handles image URLs correctly."""
+    messages = [
+        {
+            'role': 'tool',
+            'name': 'browser',
+            'content': [
+                {
+                    'type': 'text',
+                    'text': 'some browser tool results',
+                },
+                {
+                    'type': 'image_url',
+                    'image_url': {'url': 'data:image/gif;base64,R0lGODlhAQABAAAAACw='},
+                },
+            ],
+        }
+    ]
+    converted_messages = convert_fncall_messages_to_non_fncall_messages(messages, [])
+    assert len(converted_messages) == 1
+    assert converted_messages[0]['role'] == 'user'
+    assert len(converted_messages[0]['content']) == len(messages[0]['content'])
+    assert (
+        next(c for c in converted_messages[0]['content'] if c['type'] == 'text')['text']
+        == f'EXECUTION RESULT of [{messages[0]["name"]}]:\n{messages[0]["content"][0]["text"]}'
     )
