@@ -14,6 +14,9 @@ from openhands.core.logger import openhands_logger as logger
 from openhands.events.action.action import Action
 from openhands.events.action.commands import CmdRunAction
 from openhands.events.stream import EventStream
+from openhands.integrations.azure_devops.azure_devops_service import (
+    AzureDevOpsServiceImpl,
+)
 from openhands.integrations.github.github_service import GithubServiceImpl
 from openhands.integrations.gitlab.gitlab_service import GitLabServiceImpl
 from openhands.integrations.service_types import (
@@ -108,6 +111,7 @@ class ProviderHandler:
         self.service_class_map: dict[ProviderType, type[GitService]] = {
             ProviderType.GITHUB: GithubServiceImpl,
             ProviderType.GITLAB: GitLabServiceImpl,
+            ProviderType.AZURE_DEVOPS: AzureDevOpsServiceImpl,
         }
 
         self.external_auth_id = external_auth_id
@@ -124,13 +128,25 @@ class ProviderHandler:
         """Helper method to instantiate a service for a given provider"""
         token = self.provider_tokens[provider]
         service_class = self.service_class_map[provider]
-        return service_class(
-            user_id=token.user_id,
-            external_auth_id=self.external_auth_id,
-            external_auth_token=self.external_auth_token,
-            token=token.token,
-            external_token_manager=self.external_token_manager,
-        )
+
+        # Prepare common arguments
+        args: dict[str, Any] = {
+            'user_id': token.user_id,
+            'token': token.token,
+            'external_auth_id': self.external_auth_id,
+            'external_auth_token': self.external_auth_token,
+            'external_token_manager': self.external_token_manager,
+        }
+
+        # Add base_domain for services that support it
+        if token.host and provider in [
+            ProviderType.GITHUB,
+            ProviderType.GITLAB,
+            ProviderType.AZURE_DEVOPS,
+        ]:
+            args['base_domain'] = token.host
+
+        return service_class(**args)  # type: ignore[misc]
 
     async def get_user(self) -> User:
         """Get user information from the first available provider"""
