@@ -1,5 +1,29 @@
 // Here are the list of verified models and providers that we know work well with OpenHands.
-export const VERIFIED_PROVIDERS = ["openai", "azure", "anthropic", "deepseek"];
+export const VERIFIED_PROVIDERS = [
+  "openai",
+  "azure",
+  "anthropic",
+  "deepseek",
+  "litellm",
+  "litellm_proxy",
+];
+
+// LiteLLM proxy models that we want to show in the dropdown
+export const VERIFIED_LITELLM_MODELS = [
+  "gpt-4o",
+  "gpt-4o-mini",
+  "claude-3-5-sonnet-20241022",
+  "claude-3-7-sonnet-20250219",
+];
+
+// LiteLLM proxy models that we want to show in the dropdown (with litellm_proxy/ prefix)
+export const VERIFIED_LITELLM_PROXY_MODELS = [
+  "litellm_proxy/gpt-4o",
+  "litellm_proxy/gpt-4o-mini",
+  "litellm_proxy/claude-3-5-sonnet-20241022",
+  "litellm_proxy/claude-3-7-sonnet-20250219",
+];
+
 export const VERIFIED_MODELS = [
   "o3-mini-2025-01-31",
   "o3-2025-04-16",

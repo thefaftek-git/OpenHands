@@ -5,6 +5,15 @@ export const ProviderOptions = {
 
 export type Provider = keyof typeof ProviderOptions;
 
+export const LLMProviderOptions = {
+  openai: "openai",
+  anthropic: "anthropic",
+  litellm: "litellm",
+  litellm_proxy: "litellm_proxy",
+} as const;
+
+export type LLMProvider = keyof typeof LLMProviderOptions;
+
 export type ProviderToken = {
   token: string;
   host: string | null;
@@ -44,6 +53,9 @@ export type Settings = {
   USER_CONSENTS_TO_ANALYTICS: boolean | null;
   SEARCH_API_KEY?: string;
   IS_NEW_USER?: boolean;
+  LITELLM_PROXY_ENABLED: boolean;
+  LITELLM_PROXY_BASE_URL: string;
+  LITELLM_PROXY_API_KEY: string;
   MCP_CONFIG?: MCPConfig;
 };
 
@@ -64,6 +76,9 @@ export type ApiSettings = {
   user_consents_to_analytics: boolean | null;
   search_api_key?: string;
   provider_tokens_set: Partial<Record<Provider, string | null>>;
+  litellm_proxy_enabled: boolean;
+  litellm_proxy_base_url: string;
+  litellm_proxy_api_key: string;
   mcp_config?: {
     sse_servers: (string | MCPSSEServer)[];
     stdio_servers: MCPStdioServer[];

@@ -19,6 +19,9 @@ export const DEFAULT_SETTINGS: Settings = {
   ENABLE_PROACTIVE_CONVERSATION_STARTERS: false,
   SEARCH_API_KEY: "",
   IS_NEW_USER: true,
+  LITELLM_PROXY_ENABLED: false,
+  LITELLM_PROXY_BASE_URL: "",
+  LITELLM_PROXY_API_KEY: "",
   MCP_CONFIG: {
     sse_servers: [],
     stdio_servers: [],

@@ -27,6 +27,9 @@ const getSettingsQueryFn = async (): Promise<Settings> => {
       apiSettings.enable_proactive_conversation_starters,
     USER_CONSENTS_TO_ANALYTICS: apiSettings.user_consents_to_analytics,
     SEARCH_API_KEY: apiSettings.search_api_key || "",
+    LITELLM_PROXY_ENABLED: apiSettings.litellm_proxy_enabled || false,
+    LITELLM_PROXY_BASE_URL: apiSettings.litellm_proxy_base_url || "",
+    LITELLM_PROXY_API_KEY: apiSettings.litellm_proxy_api_key || "",
 
     MCP_CONFIG: apiSettings.mcp_config,
     IS_NEW_USER: false,

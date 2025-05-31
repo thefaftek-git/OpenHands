@@ -46,6 +46,9 @@ function LlmSettingsScreen() {
     confirmationMode: false,
     enableDefaultCondenser: false,
     securityAnalyzer: false,
+    litellmProxyEnabled: false,
+    litellmProxyBaseUrl: "",
+    litellmProxyApiKey: false,
   });
 
   const modelsAndProviders = organizeModelsAndProviders(
@@ -84,6 +87,9 @@ function LlmSettingsScreen() {
       confirmationMode: false,
       enableDefaultCondenser: false,
       securityAnalyzer: false,
+      litellmProxyEnabled: false,
+      litellmProxyBaseUrl: false,
+      litellmProxyApiKey: false,
     });
   };
 
@@ -135,6 +141,16 @@ function LlmSettingsScreen() {
       .get("security-analyzer-input")
       ?.toString();
 
+    // LiteLLM Proxy settings
+    const litellmProxyEnabled =
+      formData.get("litellm-proxy-enabled-switch")?.toString() === "on";
+    const litellmProxyBaseUrl = formData
+      .get("litellm-proxy-base-url-input")
+      ?.toString();
+    const litellmProxyApiKey = formData
+      .get("litellm-proxy-api-key-input")
+      ?.toString();
+
     saveSettings(
       {
         LLM_MODEL: model,
@@ -145,6 +161,9 @@ function LlmSettingsScreen() {
         CONFIRMATION_MODE: confirmationMode,
         ENABLE_DEFAULT_CONDENSER: enableDefaultCondenser,
         SECURITY_ANALYZER: confirmationMode ? securityAnalyzer : undefined,
+        LITELLM_PROXY_ENABLED: litellmProxyEnabled,
+        LITELLM_PROXY_BASE_URL: litellmProxyBaseUrl || "",
+        LITELLM_PROXY_API_KEY: litellmProxyApiKey || "",
       },
       {
         onSuccess: handleSuccessfulMutation,
@@ -275,14 +294,33 @@ function LlmSettingsScreen() {
               data-testid="llm-settings-form-basic"
               className="flex flex-col gap-6"
             >
-              {!isLoading && !isFetching && (
-                <ModelSelector
-                  models={modelsAndProviders}
-                  currentModel={
-                    settings.LLM_MODEL || "anthropic/claude-sonnet-4-20250514"
-                  }
-                  onChange={handleModelIsDirty}
-                />
+              {!isLoading && !isFetching && settings.LITELLM_PROXY_ENABLED ? (
+                <div>
+                  <h3 className="text-lg font-medium mb-4">
+                    {t(I18nKey.SETTINGS$LITELLM_PROXY)}
+                  </h3>
+                  <p className="text-sm mb-4">
+                    {t(I18nKey.SETTINGS$USING_LITELLM_PROXY, {
+                      url: settings.LITELLM_PROXY_BASE_URL || "N/A",
+                    })}
+                  </p>
+                  <ModelSelector
+                    models={modelsAndProviders}
+                    currentModel={settings.LLM_MODEL || "gpt-4o"}
+                    onChange={handleModelIsDirty}
+                  />
+                </div>
+              ) : (
+                !isLoading &&
+                !isFetching && (
+                  <ModelSelector
+                    models={modelsAndProviders}
+                    currentModel={
+                      settings.LLM_MODEL || "anthropic/claude-sonnet-4-20250514"
+                    }
+                    onChange={handleModelIsDirty}
+                  />
+                )
               )}
 
               <SettingsInput
@@ -337,6 +375,68 @@ function LlmSettingsScreen() {
               data-testid="llm-settings-form-advanced"
               className="flex flex-col gap-6"
             >
+              {/* LiteLLM Proxy Section */}
+              <div className="border-b border-gray-700 pb-6 mb-2">
+                <h3 className="text-lg font-medium mb-4">
+                  {t(I18nKey.SETTINGS$LITELLM_PROXY)}
+                </h3>
+                <SettingsSwitch
+                  testId="litellm-proxy-enabled-switch"
+                  name="litellm-proxy-enabled-switch"
+                  defaultIsToggled={settings.LITELLM_PROXY_ENABLED}
+                  onToggle={(isToggled) => {
+                    const litellmProxyEnabledIsDirty =
+                      isToggled !== settings?.LITELLM_PROXY_ENABLED;
+                    setDirtyInputs((prev) => ({
+                      ...prev,
+                      litellmProxyEnabled: litellmProxyEnabledIsDirty,
+                    }));
+                  }}
+                >
+                  {t(I18nKey.SETTINGS$ENABLE_LITELLM_PROXY)}
+                </SettingsSwitch>
+
+                {settings.LITELLM_PROXY_ENABLED && (
+                  <>
+                    <SettingsInput
+                      testId="litellm-proxy-base-url-input"
+                      name="litellm-proxy-base-url-input"
+                      label={t(I18nKey.SETTINGS$LITELLM_PROXY_URL)}
+                      defaultValue={settings.LITELLM_PROXY_BASE_URL}
+                      placeholder="http://your-litellm-proxy-url:8000"
+                      type="text"
+                      className="w-[680px]"
+                      onChange={(baseUrl) => {
+                        const litellmProxyBaseUrlIsDirty =
+                          baseUrl !== settings?.LITELLM_PROXY_BASE_URL;
+                        setDirtyInputs((prev) => ({
+                          ...prev,
+                          litellmProxyBaseUrl: litellmProxyBaseUrlIsDirty,
+                        }));
+                      }}
+                    />
+
+                    <SettingsInput
+                      testId="litellm-proxy-api-key-input"
+                      name="litellm-proxy-api-key-input"
+                      label={t(I18nKey.SETTINGS$LITELLM_PROXY_API_KEY)}
+                      type="password"
+                      className="w-[680px]"
+                      defaultValue={settings.LITELLM_PROXY_API_KEY}
+                      placeholder="Your LiteLLM Proxy API Key"
+                      onChange={(apiKey) => {
+                        const litellmProxyApiKeyIsDirty =
+                          apiKey !== settings?.LITELLM_PROXY_API_KEY;
+                        setDirtyInputs((prev) => ({
+                          ...prev,
+                          litellmProxyApiKey: litellmProxyApiKeyIsDirty,
+                        }));
+                      }}
+                    />
+                  </>
+                )}
+              </div>
+
               <SettingsInput
                 testId="llm-custom-model-input"
                 name="llm-custom-model-input"
