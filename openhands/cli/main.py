@@ -30,7 +30,7 @@ from openhands.cli.utils import (
 from openhands.controller import AgentController
 from openhands.controller.agent import Agent
 from openhands.core.config import (
-    AppConfig,
+    OpenHandsConfig,
     parse_arguments,
     setup_config_from_args,
 )
@@ -103,7 +103,7 @@ async def cleanup_session(
 
 async def run_session(
     loop: asyncio.AbstractEventLoop,
-    config: AppConfig,
+    config: OpenHandsConfig,
     settings_store: FileSettingsStore,
     current_dir: str,
     task_content: str | None = None,
@@ -263,14 +263,12 @@ async def run_session(
     # Add MCP tools to the agent
     if agent.config.enable_mcp:
         # Add OpenHands' MCP server by default
-        openhands_mcp_server, openhands_mcp_stdio_servers = (
+        _, openhands_mcp_stdio_servers = (
             OpenHandsMCPConfigImpl.create_default_mcp_server_config(
                 config.mcp_host, config, None
             )
         )
-        # FIXME: OpenHands' SSE server may not be running when CLI mode is started
-        # if openhands_mcp_server:
-        #     config.mcp.sse_servers.append(openhands_mcp_server)
+
         config.mcp.stdio_servers.extend(openhands_mcp_stdio_servers)
 
         await add_mcp_tools_to_agent(agent, runtime, memory, config)
@@ -334,7 +332,7 @@ async def main(loop: asyncio.AbstractEventLoop) -> None:
     logger.setLevel(logging.WARNING)
 
     # Load config from toml and override with command line arguments
-    config: AppConfig = setup_config_from_args(args)
+    config: OpenHandsConfig = setup_config_from_args(args)
 
     # Load settings from Settings Store
     # TODO: Make this generic?
