@@ -58,5 +58,3 @@ jobs:
         RUNTIME: local
       run: |
         python -c "import docker; client = docker.from_env(); print('Docker client created successfully'); print(f'Docker version: {client.version()}')"
-
-
