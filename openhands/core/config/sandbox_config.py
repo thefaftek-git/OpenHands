@@ -1,6 +1,6 @@
 import os
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import BaseModel, Field, ValidationError, model_validator
 
 
 class SandboxConfig(BaseModel):
@@ -57,15 +57,17 @@ class SandboxConfig(BaseModel):
     timeout: int = Field(default=120)
     remote_runtime_init_timeout: int = Field(default=180)
     remote_runtime_api_timeout: int = Field(default=10)
-    remote_runtime_enable_retries: bool = Field(default=True)
-    remote_runtime_class: str | None = Field(
-        default=None
-    )  # can be "None" (default to gvisor) or "sysbox" (support docker inside runtime + more stable)
     enable_auto_lint: bool = Field(
         default=False
     )  # once enabled, OpenHands would lint files after editing
+
+    remote_runtime_enable_retries: bool = Field(default=True)
     use_host_network: bool = Field(default=False)
     runtime_binding_address: str = Field(default='0.0.0.0')
+    remote_runtime_class: str | None = Field(
+        default=None
+    )  # can be "None" (default to gvisor) or "sysbox" (support docker inside runtime + more stable)
+
     runtime_extra_build_args: list[str] | None = Field(default=None)
     initialize_plugins: bool = Field(default=True)
     force_rebuild_runtime: bool = Field(default=False)
@@ -81,15 +83,19 @@ class SandboxConfig(BaseModel):
     enable_gpu: bool = Field(default=False)
     docker_runtime_kwargs: dict | None = Field(default=None)
     selected_repo: str | None = Field(default=None)
+    enable_docker_in_docker: bool = Field(
+        default=True,
+        description='Whether to enable Docker-in-Docker (dind) support in the runtime container. When enabled, Docker will be installed and configured for dind operation.',
+    )
+
     trusted_dirs: list[str] = Field(default_factory=list)
     vscode_port: int | None = Field(default=None)
+
+    cuda_visible_devices: str | None = Field(default=None)
     volumes: str | None = Field(
         default=None,
         description="Volume mounts in the format 'host_path:container_path[:mode]', e.g. '/my/host/dir:/workspace:rw'. Multiple mounts can be specified using commas, e.g. '/path1:/workspace/path1,/path2:/workspace/path2:ro'",
     )
-
-    cuda_visible_devices: str | None = Field(default=None)
-    model_config = ConfigDict(extra='forbid')
 
     @classmethod
     def from_toml_section(cls, data: dict) -> dict[str, 'SandboxConfig']:

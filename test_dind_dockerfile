@@ -1,0 +1,40 @@
+FROM ubuntu:24.04
+
+# Install Docker CLI and configure for dind
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    docker.io \
+    docker-buildx-plugin \
+    docker-compose-plugin \
+    containerd.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure Docker daemon options for dind
+RUN mkdir -p /etc/docker && \
+    echo '{
+        "data-root": "/var/lib/docker",
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "storage-driver": "overlay2"
+    }' > /etc/docker/daemon.json
+
+# Add user to docker group and set permissions
+RUN groupadd -g 1000 docker && \
+    usermod -aG docker $(whoami)
+
+# Configure sysctl settings for Docker (required for dind)
+RUN echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-docker.conf && \
+    echo "net.bridge.bridge-nf-call-iptables=1" >> /etc/sysctl.d/99-docker.conf && \
+    sysctl --system
+
+# Ensure Docker socket is available and has correct permissions
+RUN mkdir -p /var/run/docker.sock && \
+    chown root:docker /var/run/docker.sock && \
+    chmod g+rw /var/run/docker.sock
+
+# Install docker-compose (optional but useful)
+RUN curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+ENV DOCKER_HOST=tcp://localhost:2375
+ENV COMPOSE_DOCKER_CLI_BASE=docker
+
+CMD ["bash", "-c", "docker --version"]
