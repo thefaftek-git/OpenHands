@@ -34,6 +34,7 @@ class OpenHandsConfig(BaseModel):
         file_store_path: Path to the file store.
         file_store_web_hook_url: Optional url for file store web hook
         file_store_web_hook_headers: Optional headers for file_store web hook
+        enable_browser: Whether to enable the browser environment
         save_trajectory_path: Either a folder path to store trajectories with auto-generated filenames, or a designated trajectory file path.
         save_screenshots_in_trajectory: Whether to save screenshots in trajectory (in encoded image format).
         replay_trajectory_path: Path to load trajectory and replay. If provided, trajectory would be replayed first before user's instruction.
@@ -68,6 +69,7 @@ class OpenHandsConfig(BaseModel):
     file_store_path: str = Field(default='~/.openhands')
     file_store_web_hook_url: str | None = Field(default=None)
     file_store_web_hook_headers: dict | None = Field(default=None)
+    enable_browser: bool = Field(default=True)
     save_trajectory_path: str | None = Field(default=None)
     save_screenshots_in_trajectory: bool = Field(default=False)
     replay_trajectory_path: str | None = Field(default=None)
@@ -87,6 +89,7 @@ class OpenHandsConfig(BaseModel):
     run_as_openhands: bool = Field(default=True)
     max_iterations: int = Field(default=OH_MAX_ITERATIONS)
     max_budget_per_task: float | None = Field(default=None)
+    init_git_in_empty_workspace: bool = Field(default=False)
 
     disable_color: bool = Field(default=False)
     jwt_secret: SecretStr | None = Field(default=None)

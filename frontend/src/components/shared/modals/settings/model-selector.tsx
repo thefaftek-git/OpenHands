@@ -68,7 +68,7 @@ export function ModelSelector({
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col md:flex-row w-[full] md:w-[680px] justify-between gap-4 md:gap-[46px]">
+    <div className="flex flex-col md:flex-row w-[full] max-w-[680px] justify-between gap-4 md:gap-[46px]">
       <fieldset className="flex flex-col gap-2.5 w-full">
         <label className="text-sm">{t(I18nKey.LLM$PROVIDER)}</label>
         <Autocomplete
@@ -97,26 +97,30 @@ export function ModelSelector({
           }}
         >
           <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$VERIFIED)}>
-            {Object.keys(models)
-              .filter((provider) => VERIFIED_PROVIDERS.includes(provider))
-              .map((provider) => (
+            {VERIFIED_PROVIDERS.filter((provider) => models[provider]).map(
+              (provider) => (
                 <AutocompleteItem
                   data-testid={`provider-item-${provider}`}
                   key={provider}
                 >
                   {mapProvider(provider)}
                 </AutocompleteItem>
-              ))}
+              ),
+            )}
           </AutocompleteSection>
-          <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
-            {Object.keys(models)
-              .filter((provider) => !VERIFIED_PROVIDERS.includes(provider))
-              .map((provider) => (
-                <AutocompleteItem key={provider}>
-                  {mapProvider(provider)}
-                </AutocompleteItem>
-              ))}
-          </AutocompleteSection>
+          {Object.keys(models).some(
+            (provider) => !VERIFIED_PROVIDERS.includes(provider),
+          ) ? (
+            <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
+              {Object.keys(models)
+                .filter((provider) => !VERIFIED_PROVIDERS.includes(provider))
+                .map((provider) => (
+                  <AutocompleteItem key={provider}>
+                    {mapProvider(provider)}
+                  </AutocompleteItem>
+                ))}
+            </AutocompleteSection>
+          ) : null}
         </Autocomplete>
       </fieldset>
 
@@ -147,24 +151,28 @@ export function ModelSelector({
           }}
         >
           <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$VERIFIED)}>
-            {models[selectedProvider || ""]?.models
-              .filter((model) => VERIFIED_MODELS.includes(model))
-              .map((model) => (
-                <AutocompleteItem key={model}>{model}</AutocompleteItem>
-              ))}
+            {VERIFIED_MODELS.filter((model) =>
+              models[selectedProvider || ""]?.models?.includes(model),
+            ).map((model) => (
+              <AutocompleteItem key={model}>{model}</AutocompleteItem>
+            ))}
           </AutocompleteSection>
-          <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
-            {models[selectedProvider || ""]?.models
-              .filter((model) => !VERIFIED_MODELS.includes(model))
-              .map((model) => (
-                <AutocompleteItem
-                  data-testid={`model-item-${model}`}
-                  key={model}
-                >
-                  {model}
-                </AutocompleteItem>
-              ))}
-          </AutocompleteSection>
+          {models[selectedProvider || ""]?.models?.some(
+            (model) => !VERIFIED_MODELS.includes(model),
+          ) ? (
+            <AutocompleteSection title={t(I18nKey.MODEL_SELECTOR$OTHERS)}>
+              {models[selectedProvider || ""]?.models
+                .filter((model) => !VERIFIED_MODELS.includes(model))
+                .map((model) => (
+                  <AutocompleteItem
+                    data-testid={`model-item-${model}`}
+                    key={model}
+                  >
+                    {model}
+                  </AutocompleteItem>
+                ))}
+            </AutocompleteSection>
+          ) : null}
         </Autocomplete>
       </fieldset>
     </div>
