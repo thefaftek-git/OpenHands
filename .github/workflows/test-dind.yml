@@ -1,4 +1,5 @@
 
+# This workflow tests Docker-in-Docker (dind) functionality
 name: Test Docker-in-Docker Runtime
 
 on:
@@ -17,7 +18,7 @@ jobs:
 
     services:
       docker:
-        enabled: true
+        image: docker:20.10-dind
         options: --privileged -v /var/run/docker.sock:/var/run/docker.sock
 
     steps:
