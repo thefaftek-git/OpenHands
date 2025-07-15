@@ -47,6 +47,13 @@ jobs:
         run: poetry install --with dev,test,runtime
       - name: Build Environment
         run: make build
+      - name: Upload debug zip file as artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: debug-zip-file-${{ github.run_id }}-${{ github.run_attempt }}
+          path: vscode_test.zip
+          retention-days: 7
       - name: Run Unit Tests
         run: poetry run pytest --forked -n auto -svv ./tests/unit
       - name: Run Runtime Tests with CLIRuntime
