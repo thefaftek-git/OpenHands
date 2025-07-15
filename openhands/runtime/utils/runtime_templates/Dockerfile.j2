@@ -68,11 +68,17 @@ RUN mkdir -p /openhands && \
 # Docker-in-Docker Setup
 ENV DOCKER_HOST=tcp://localhost:2375
 ENV COMPOSE_DOCKER_CLI_BASE=docker
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        docker.io docker-compose-plugin && \
+    usermod -aG docker $USER && \
+    mkdir -p /var/run/docker.sock && \
+    chmod 666 /var/run/docker.sock
  {% endmacro %}
 
-+{% if config.sandbox.enable_docker_in_docker %}
-+{{ setup_dind() }}
-+{% endif %}
+{% if config.sandbox.enable_docker_in_docker %}
+{{ setup_dind() }}
+{% endif %}
 
 
  ARG RELEASE_TAG="openvscode-server-v1.98.2"
@@ -110,17 +116,17 @@ RUN mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-memory-monitor && \
 RUN rm -rf ${OPENVSCODE_SERVER_ROOT}/extensions/{handlebars,pug,json,diff,grunt,ini,npm}
 {% endmacro %}
 
-+{% macro install_vscode_extensions() %}
-+# Install our custom extension
-+RUN mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-hello-world && \
-+    cp -r /openhands/code/openhands/runtime/utils/vscode-extensions/hello-world/* ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-hello-world/
-+
-+RUN mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-memory-monitor && \
-+    cp -r /openhands/code/openhands/runtime/utils/vscode-extensions/memory-monitor/* ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-memory-monitor/
-+
-+# Some extension dirs are removed because they trigger false positives in vulnerability scans.
-+RUN rm -rf ${OPENVSCODE_SERVER_ROOT}/extensions/{handlebars,pug,json,diff,grunt,ini,npm}
-+{% endmacro %}
+{% macro install_vscode_extensions() %}
+# Install our custom extension
+RUN mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-hello-world && \
+    cp -r /openhands/code/openhands/runtime/utils/vscode-extensions/hello-world/* ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-hello-world/
+
+RUN mkdir -p ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-memory-monitor && \
+    cp -r /openhands/code/openhands/runtime/utils/vscode-extensions/memory-monitor/* ${OPENVSCODE_SERVER_ROOT}/extensions/openhands-memory-monitor/
+
+# Some extension dirs are removed because they trigger false positives in vulnerability scans.
+RUN rm -rf ${OPENVSCODE_SERVER_ROOT}/extensions/{handlebars,pug,json,diff,grunt,ini,npm}
+{% endmacro %}
 
 {% macro install_dependencies() %}
 # Install all dependencies
@@ -154,25 +160,25 @@ RUN \
 
  {{ setup_base_system() }}
 
-+# Install micromamba
-+RUN mkdir -p /openhands/micromamba/bin && \
-+    /bin/bash -c "PREFIX_LOCATION=/openhands/micromamba BIN_FOLDER=/openhands/micromamba/bin INIT_YES=no CONDA_FORGE_YES=yes $(curl -L https://micro.mamba.pm/install.sh)" && \
-+    /openhands/micromamba/bin/micromamba config remove channels defaults && \
-+    /openhands/micromamba/bin/micromamba config list
-+
-+# Create the openhands virtual environment and install poetry and python
-+RUN /openhands/micromamba/bin/micromamba create -n openhands -y && \
-+    /openhands/micromamba/bin/micromamba install -n openhands -c conda-forge poetry python=3.12 -y
-+
-+# Create a clean openhands directory including only the pyproject.toml, poetry.lock and openhands/__init__.py
-+RUN \
-+    if [ -d /openhands/code ]; then rm -rf /openhands/code; fi && \
-+    mkdir -p /openhands/code/openhands && \
-+    touch /openhands/code/openhands/__init__.py
-+
-+COPY ./code/pyproject.toml ./code/poetry.lock /openhands/code/
-+
-+{{ install_dependencies() }}
+# Install micromamba
+RUN mkdir -p /openhands/micromamba/bin && \
+    /bin/bash -c "PREFIX_LOCATION=/openhands/micromamba BIN_FOLDER=/openhands/micromamba/bin INIT_YES=no CONDA_FORGE_YES=yes $(curl -L https://micro.mamba.pm/install.sh)" && \
+    /openhands/micromamba/bin/micromamba config remove channels defaults && \
+    /openhands/micromamba/bin/micromamba config list
+
+# Create the openhands virtual environment and install poetry and python
+RUN /openhands/micromamba/bin/micromamba create -n openhands -y && \
+    /openhands/micromamba/bin/micromamba install -n openhands -c conda-forge poetry python=3.12 -y
+
+# Create a clean openhands directory including only the pyproject.toml, poetry.lock and openhands/__init__.py
+RUN \
+    if [ -d /openhands/code ]; then rm -rf /openhands/code; fi && \
+    mkdir -p /openhands/code/openhands && \
+    touch /openhands/code/openhands/__init__.py
+
+COPY ./code/pyproject.toml ./code/poetry.lock /openhands/code/
+
+{{ install_dependencies() }}
 
  {% endif %}
 
@@ -185,7 +191,7 @@ RUN \
  COPY ./code/pyproject.toml ./code/poetry.lock /openhands/code/
 
  COPY ./code/openhands /openhands/code/openhands
-+RUN chmod a+rwx /openhands/code/openhands/__init__.py
+RUN chmod a+rwx /openhands/code/openhands/__init__.py
 
  # ================================================================
 # END: Build from versioned image
