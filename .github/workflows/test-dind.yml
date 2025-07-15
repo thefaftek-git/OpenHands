@@ -18,7 +18,7 @@ jobs:
 
     services:
       docker:
-        image: docker:20.10-dind
+        image: docker:24.0.5-dind
         options: --privileged -v /var/run/docker.sock:/var/run/docker.sock
 
     steps:
