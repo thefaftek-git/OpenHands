@@ -148,6 +148,16 @@ model = "gpt-4o"
 # This caps the exponential backoff to prevent excessively long
 #retry_max_wait = 120
 
+# Enable docker-in-docker mode for development
+#enable_dind = false
+
+# Base Docker image to use for dinD containers. If not specified, a reasonable default will be used.
+#dind_base_image = ""
+
+# Additional volume mounts for dinD containers in the format 'host_path:container_path[:mode]'
+# e.g. '/my/host/dir:/workspace:rw'. Multiple mounts can be specified using commas
+#dind_volumes = ""
+
 # Minimum wait time (in seconds) between retry attempts
 # This sets the initial delay before the first retry
 #retry_min_wait = 15
@@ -158,6 +168,7 @@ model = "gpt-4o"
 #retry_multiplier = 2.0
 
 # Drop any unmapped (unsupported) params without causing an exception
+
 #drop_params = false
 
 # Modify params for litellm to do transformations like adding a default message, when a message is empty.
@@ -479,3 +490,4 @@ type = "noop"
 
 # Run the runtime sandbox container in privileged mode for use with docker-in-docker
 #privileged = false
+

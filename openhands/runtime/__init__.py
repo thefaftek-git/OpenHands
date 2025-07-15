@@ -11,17 +11,21 @@ from openhands.runtime.impl.remote.remote_runtime import RemoteRuntime
 from openhands.utils.import_utils import get_impl
 
 # mypy: disable-error-code="type-abstract"
+
 _DEFAULT_RUNTIME_CLASSES: dict[str, type[Runtime]] = {
     'eventstream': DockerRuntime,
     'docker': DockerRuntime,
+    'dind': DockerRuntime,  # Add dinD as an alias for DockerRuntime
     'remote': RemoteRuntime,
     'local': LocalRuntime,
     'kubernetes': KubernetesRuntime,
     'cli': CLIRuntime,
 }
 
+
 # Try to import third-party runtimes if available
 _THIRD_PARTY_RUNTIME_CLASSES: dict[str, type[Runtime]] = {}
+
 
 # Dynamically discover and import third-party runtimes
 
@@ -118,3 +122,6 @@ __all__ = [
 # Add third-party runtimes to __all__ if they're available
 for runtime_name, runtime_class in _THIRD_PARTY_RUNTIME_CLASSES.items():
     __all__.append(runtime_class.__name__)
+
+
+

@@ -117,3 +117,15 @@ class SandboxConfig(BaseModel):
         if self.base_container_image is None:
             self.base_container_image = 'nikolaik/python-nodejs:python3.12-nodejs22'
         return self
+
+    # dinD-specific configuration
+    enable_dind: bool = Field(default=False, description="Enable docker-in-docker mode for development")
+    dind_base_image: str | None = Field(
+        default=None,
+        description="Base Docker image to use for dinD containers. If not specified, a reasonable default will be used."
+    )
+    dind_volumes: str | None = Field(
+        default=None,
+        description="Additional volume mounts for dinD containers in the format 'host_path:container_path[:mode]', e.g. '/my/host/dir:/workspace:rw'. Multiple mounts can be specified using commas."
+    )
+
