@@ -33,7 +33,8 @@ jobs:
     - name: Install dependencies
       run: |
         pip install poetry
-        poetry install --only main,dev
+        poetry install
+        make build
 
     - name: Test Docker-in-Docker runtime build
       env:
