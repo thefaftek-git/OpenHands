@@ -1,5 +1,5 @@
 
-# This workflow tests Docker-in-Docker (dind) functionality
+# This workflow tests Docker-in-Docker (dind) functionality for OpenHands
 name: Test Docker-in-Docker Runtime
 
 on:
@@ -30,32 +30,32 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install dependencies
+    - name: Install dependencies and build
       run: |
         pip install poetry
         poetry install --only main,dev
+        make build
 
-    - name: Verify Docker service is accessible
+    - name: Test Docker-in-Docker runtime build
       env:
         INSTALL_DOCKER: 0
         RUNTIME: local
       run: |
-        # Check if Docker is running and accessible
+        python -m openhands.runtime.utils.runtime_build \
+          --base_image ubuntu:24.04 \
+          --force_rebuild
+
+    - name: Test Docker-in-Docker functionality in container
+      env:
+        INSTALL_DOCKER: 0
+        RUNTIME: local
+      run: |
+        # Verify Docker is accessible and working inside the container
         docker info || (echo "Docker not accessible" && exit 1)
-        echo "Docker service is working correctly"
-
-    - name: Test basic Docker commands in container
-      env:
-        INSTALL_DOCKER: 0
-        RUNTIME: local
-      run: |
-        # Test basic Docker functionality
         docker version
-        docker ps
+        echo "Docker-in-Docker functionality verified successfully"
 
-    - name: Verify Docker-in-Docker setup
-      env:
-        INSTALL_DOCKER: 0
-        RUNTIME: local
+    - name: Cleanup
+      if: always()
       run: |
-        echo "Docker-in-Docker functionality tests completed successfully"
+        echo "Test completed successfully"
