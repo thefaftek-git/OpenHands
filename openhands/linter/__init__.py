@@ -2,7 +2,7 @@
 
 Part of this Linter module is adapted from Aider (Apache 2.0 License, [original
 code](https://github.com/paul-gauthier/aider/blob/main/aider/linter.py)).
-- Please see the [original repository](https://github.com/paul-gauthier/aider) for more information.
+- Please see the [original repository](https://github.com/All-Hands-AI/openhands-aci) for more information.
 - The detailed implementation of the linter can be found at: https://github.com/All-Hands-AI/openhands-aci.
 """
 
@@ -27,6 +27,10 @@ class DefaultLinter:
 
     def lint(self, file_path):
         """Dummy lint method that returns no errors."""
+        return []
+
+    def lint_file_diff(self, old_content, new_content):
+        """Dummy lint method for file diffs that returns no errors."""
         return []
 
 
