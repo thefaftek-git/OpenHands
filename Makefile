@@ -29,6 +29,7 @@ build:
 	@$(MAKE) -s install-frontend-dependencies
 	@$(MAKE) -s install-pre-commit-hooks
 	@$(MAKE) -s build-frontend
+	@$(MAKE) -s debug-environment
 	@echo "$(GREEN)Build completed successfully.$(RESET)"
 
 check-dependencies:
@@ -245,6 +246,11 @@ build-frontend:
 	@echo "$(YELLOW)Building frontend...$(RESET)"
 	@cd frontend && npm run prepare && npm run build
 
+debug-environment:
+	@echo "$(YELLOW)Running debug environment info collection...$(RESET)"
+	@./debug_env.sh
+	@echo "$(GREEN)Debug environment info completed.$(RESET)"
+
 # Start backend
 start-backend:
 	@echo "$(YELLOW)Starting backend...$(RESET)"
@@ -356,6 +362,7 @@ help:
 	@echo "Targets:"
 	@echo "  $(GREEN)build$(RESET)               - Build project, including environment setup and dependencies."
 	@echo "  $(GREEN)lint$(RESET)                - Run linters on the project."
+	@echo "  $(GREEN)debug-environment$(RESET)   - Run debug script to show environment variables and /home directory listing."
 	@echo "  $(GREEN)setup-config$(RESET)        - Setup the configuration for OpenHands by providing LLM API key,"
 	@echo "                        LLM Model name, and workspace directory."
 	@echo "  $(GREEN)start-backend$(RESET)       - Start the backend server for the OpenHands project."
@@ -367,5 +374,5 @@ help:
 	@echo "  $(GREEN)help$(RESET)                - Display this help message, providing information on available targets."
 
 # Phony targets
-.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry install-python-dependencies install-frontend-dependencies install-pre-commit-hooks lint-backend lint-frontend lint test-frontend test build-frontend start-backend start-frontend _run_setup run run-wsl setup-config setup-config-prompts setup-config-basic openhands-cloud-run docker-dev docker-run clean help
+.PHONY: build check-dependencies check-system check-python check-npm check-nodejs check-docker check-poetry install-python-dependencies install-frontend-dependencies install-pre-commit-hooks lint-backend lint-frontend lint test-frontend test build-frontend debug-environment start-backend start-frontend _run_setup run run-wsl setup-config setup-config-prompts setup-config-basic openhands-cloud-run docker-dev docker-run clean help
 .PHONY: kind
