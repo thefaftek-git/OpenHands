@@ -50,12 +50,29 @@ jobs:
         INSTALL_DOCKER: 0
         RUNTIME: local
       run: |
-        # Verify Docker is accessible and working inside the container
-        docker info || (echo "Docker not accessible" && exit 1)
-        docker version
-        echo "Docker-in-Docker functionality verified successfully"
+        python test_dind_simple.py
 
-    - name: Cleanup
-      if: always()
+    - name: Verify Docker is accessible inside the container
+      env:
+        INSTALL_DOCKER: 0
+        RUNTIME: local
       run: |
-        echo "Test completed successfully"
+        # Check if Docker is running and accessible
+        docker info || (echo "Docker not accessible" && exit 1)
+        echo "Docker service is working correctly"
+
+    - name: Test basic Docker commands in container
+      env:
+        INSTALL_DOCKER: 0
+        RUNTIME: local
+      run: |
+        # Test basic Docker functionality
+        docker version
+        docker ps
+
+    - name: Verify Docker-in-Docker setup
+      env:
+        INSTALL_DOCKER: 0
+        RUNTIME: local
+      run: |
+        echo "Docker-in-Docker functionality tests completed successfully"
