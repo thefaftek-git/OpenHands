@@ -48,9 +48,10 @@ jobs:
         INSTALL_DOCKER: 0
         RUNTIME: local
       run: |
-        python -m openhands.runtime.impl.docker.docker_runtime \
-          --base_image ubuntu:24.04 \
-          --test_dind
+        python -m pytest tests/runtime/test_docker_images.py::test_bash_python_version -v \
+          --tb=short \
+          -o log_cli=true \
+          -o log_cli_level=DEBUG
 
     - name: Verify Docker is accessible inside the container
       env:
