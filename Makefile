@@ -249,7 +249,7 @@ build-frontend:
 debug-environment:
 	@echo "$(YELLOW)Running debug environment info collection...$(RESET)"
 	@./debug_env.sh
-	@echo "$(GREEN)Debug environment info completed.$(RESET)"
+	@echo "$(GREEN)Debug environment info completed and saved to debug_output.txt.$(RESET)"
 
 # Start backend
 start-backend:
@@ -362,7 +362,7 @@ help:
 	@echo "Targets:"
 	@echo "  $(GREEN)build$(RESET)               - Build project, including environment setup and dependencies."
 	@echo "  $(GREEN)lint$(RESET)                - Run linters on the project."
-	@echo "  $(GREEN)debug-environment$(RESET)   - Run debug script to show environment variables and /home directory listing."
+	@echo "  $(GREEN)debug-environment$(RESET)   - Run debug script to show environment variables and /home directory listing, saves output to debug_output.txt."
 	@echo "  $(GREEN)setup-config$(RESET)        - Setup the configuration for OpenHands by providing LLM API key,"
 	@echo "                        LLM Model name, and workspace directory."
 	@echo "  $(GREEN)start-backend$(RESET)       - Start the backend server for the OpenHands project."

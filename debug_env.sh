@@ -1,7 +1,11 @@
 #!/bin/bash
 # Debug script for local development environment
 # Outputs environment variables and lists files in /home directory recursively
+# Saves output to debug_output.txt file
 
+OUTPUT_FILE="debug_output.txt"
+
+{
 echo "==================== DEBUG ENVIRONMENT INFO ===================="
 echo "Timestamp: $(date)"
 echo "=================================================================="
@@ -24,3 +28,6 @@ else
 fi
 echo "=================================================================="
 echo "Debug environment info completed at: $(date)"
+} > "$OUTPUT_FILE"
+
+echo "Debug environment info saved to: $OUTPUT_FILE"
