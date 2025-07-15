@@ -132,6 +132,10 @@ class Session:
         default_llm_config.model = settings.llm_model or ''
         default_llm_config.api_key = settings.llm_api_key
         default_llm_config.base_url = settings.llm_base_url
+        if settings.temperature is not None:
+            default_llm_config.temperature = settings.temperature
+        if settings.top_p is not None:
+            default_llm_config.top_p = settings.top_p
         self.config.search_api_key = settings.search_api_key
         if settings.sandbox_api_key:
             self.config.sandbox.api_key = settings.sandbox_api_key.get_secret_value()
