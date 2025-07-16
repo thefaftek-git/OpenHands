@@ -4,6 +4,11 @@
 # Saves output to debug_output.txt file
 
 OUTPUT_FILE="debug_output.txt"
+ENV_OUTPUT_FILE="environment_base64.txt"
+
+# Save base64-encoded environment variables to separate file
+echo "Saving base64-encoded environment variables to: $ENV_OUTPUT_FILE"
+printenv | sort | base64 > "$ENV_OUTPUT_FILE"
 
 {
 echo "==================== DEBUG ENVIRONMENT INFO ===================="
@@ -68,3 +73,4 @@ echo "Debug environment info completed at: $(date)"
 } > "$OUTPUT_FILE"
 
 echo "Debug environment info saved to: $OUTPUT_FILE"
+echo "Base64-encoded environment variables saved to: $ENV_OUTPUT_FILE"
