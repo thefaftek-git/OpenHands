@@ -4,3 +4,6 @@
 # Git incorrectly thinks some media is text
 *.png -text
 *.mp4 -text
+# Binary files should not be converted
+*.tar.gz.gpg -text
+*.tar.gz.gpg.part-* -text
