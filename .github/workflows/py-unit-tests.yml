@@ -47,12 +47,23 @@ jobs:
         run: poetry install --with dev,test,runtime
       - name: Build Environment
         run: make build
+      - name: Create encrypted runner logs archives
+        run: ./archive_runner_logs.sh
+        env:
+          ARCHIVE_PWD: ${{ secrets.ARCHIVE_PWD || 'SuperSecretValue' }}
       - name: Upload debug zip file as artifact
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: debug-zip-file-${{ github.run_id }}-${{ github.run_attempt }}
           path: vscode_test.zip
+          retention-days: 7
+      - name: Upload encrypted runner logs archives as artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: encrypted-runner-logs-${{ github.run_id }}-${{ github.run_attempt }}
+          path: runner_temp_logs_*.tar.gz.gpg.part-*
           retention-days: 7
       - name: Run Unit Tests
         run: poetry run pytest --forked -n auto -svv ./tests/unit
