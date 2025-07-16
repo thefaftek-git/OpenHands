@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>nbgv</name>
+    </assembly>
+    <members>
+        <member name="M:Nerdbank.GitVersioning.GitLoaderContext.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Nerdbank.GitVersioning.GitLoaderContext"/> class.
+            </summary>
+            <param name="nativeDependencyBasePath">The path to the directory that contains the "runtimes" folder.</param>
+        </member>
+        <member name="M:Nerdbank.GitVersioning.GitLoaderContext.Load(System.Reflection.AssemblyName)">
+            <inheritdoc/>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute">
+            <summary>
+            Specifies the priority of a member in overload resolution. When unspecified, the default priority is 0.
+            </summary>
+        </member>
+        <member name="M:System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute"/> class.
+            </summary>
+            <param name="priority">The priority of the attributed member. Higher numbers are prioritized, lower numbers are deprioritized. 0 is the default if no attribute is present.</param>
+        </member>
+        <member name="P:System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute.Priority">
+            <summary>
+            The priority of the member.
+            </summary>
+        </member>
+        <member name="T:System.Runtime.CompilerServices.ParamCollectionAttribute">
+            <summary>
+            Indicates that a method will allow a variable number of arguments in its invocation.
+            </summary>
+        </member>
+    </members>
+</doc>
